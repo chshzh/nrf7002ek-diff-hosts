@@ -1,0 +1,14 @@
+/* Disable Ethernet MAC controller */
+&mac {
+	status = "disabled";
+};
+
+/* Disable MDIO interface */
+&mdio {
+	status = "disabled";
+};
+
+/* Disable the ethernet PHY */
+&phy {
+	status = "disabled";
+}; 

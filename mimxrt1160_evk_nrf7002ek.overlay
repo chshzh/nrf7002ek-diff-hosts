@@ -1,0 +1,52 @@
+#include <freq.h>
+
+/ {
+	chosen {
+		zephyr,wifi = &wlan0;
+	};
+};
+
+&pinctrl{
+	pinmux_lpspi1: pinmux_lpspi1 {
+		group0 {
+			pinmux = <&iomuxc_gpio_ad_28_lpspi1_sck>, /* D13 iomuxc_gpio_ad_28_lpspi1_sck SPI_CLK */
+				<&iomuxc_gpio_ad_31_lpspi1_sdi>,
+				<&iomuxc_gpio_ad_30_lpspi1_sdo>,
+				<&iomuxc_gpio_ad_07_gpio9_io06>,
+				<&iomuxc_gpio_ad_01_gpio9_io00>;
+			drive-strength = "high";
+			slew-rate = "fast";
+		};
+	};
+};
+
+&lpspi1 {
+	/* enable interface, use default pin mappings */
+	status = "okay"; 
+	cs-gpios = <&gpio9 28 GPIO_ACTIVE_LOW>; /* D10 iomuxc_gpio_ad_29 */
+	nrf70: nrf7002-spi@0 {
+		compatible = "nordic,nrf7002-spi";
+		status = "okay";
+		reg = <0>;
+		spi-max-frequency = <DT_FREQ_M(8)>;
+
+		iovdd-ctrl-gpios = <&gpio11 12 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>; /* D0 iomuxc_gpio_disp_b2_11 */
+		bucken-gpios = <&gpio11 11 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;/* D1 iomuxc_gpio_disp_b2_10 */
+		host-irq-gpios = <&gpio9 13 GPIO_ACTIVE_HIGH>;/* D7 iomuxc_gpio_ad_14 */
+		
+		/* List of interfaces */
+		wlan0: wlan0 {
+			compatible = "nordic,wlan";
+		};
+		/* Wi-Fi TX power limits */
+		wifi-max-tx-pwr-2g-dsss = <21>;
+		wifi-max-tx-pwr-2g-mcs0 = <16>;
+		wifi-max-tx-pwr-2g-mcs7 = <16>;
+		wifi-max-tx-pwr-5g-low-mcs0 = <13>;
+		wifi-max-tx-pwr-5g-low-mcs7 = <13>;
+		wifi-max-tx-pwr-5g-mid-mcs0 = <13>;
+		wifi-max-tx-pwr-5g-mid-mcs7 = <13>;
+		wifi-max-tx-pwr-5g-high-mcs0 = <12>;
+		wifi-max-tx-pwr-5g-high-mcs7 = <12>;
+	};
+}; 
