@@ -1,0 +1,56 @@
+#include <freq.h>
+
+/ {
+	chosen {
+		zephyr,wifi = &wlan0;
+	};
+};
+
+/* Disable Ethernet MAC controller */
+&mac {
+	status = "disabled";
+};
+
+/* Disable MDIO interface */
+&mdio {
+	status = "disabled";
+};
+
+/* Configure SPI1 for high-speed nRF7002 communication */
+&spi1 {
+	status = "okay";
+	pinctrl-0 = <&spi1_sck_pa5 &spi1_miso_pa6 &spi1_mosi_pb5>;
+	pinctrl-names = "default";
+	cs-gpios = <&gpiod 14 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+	
+	/* High speed SPI configuration for STM32H7 */
+	clock-frequency = <DT_FREQ_M(50)>; /* 50MHz SPI clock */
+
+	nrf70: nrf7002-spi@0 {
+		compatible = "nordic,nrf7002-spi";
+		status = "okay";
+		reg = <0>;
+		spi-max-frequency = <DT_FREQ_M(8)>; /* Increased from 8MHz to 16MHz */
+
+		/* Control GPIOs - using available pins that don't conflict */
+		iovdd-ctrl-gpios = <&gpiob 7 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>; /* D0 */
+		bucken-gpios = <&gpiob 6 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;     /* D1 */
+		host-irq-gpios = <&gpiog 12 GPIO_ACTIVE_HIGH>;                     /* D7 */
+		
+		/* List of interfaces */
+		wlan0: wlan0 {
+			compatible = "nordic,wlan";
+		};
+		
+		/* Wi-Fi TX power limits */
+		wifi-max-tx-pwr-2g-dsss = <21>;
+		wifi-max-tx-pwr-2g-mcs0 = <16>;
+		wifi-max-tx-pwr-2g-mcs7 = <16>;
+		wifi-max-tx-pwr-5g-low-mcs0 = <13>;
+		wifi-max-tx-pwr-5g-low-mcs7 = <13>;
+		wifi-max-tx-pwr-5g-mid-mcs0 = <13>;
+		wifi-max-tx-pwr-5g-mid-mcs7 = <13>;
+		wifi-max-tx-pwr-5g-high-mcs0 = <12>;
+		wifi-max-tx-pwr-5g-high-mcs7 = <12>;
+	};
+};

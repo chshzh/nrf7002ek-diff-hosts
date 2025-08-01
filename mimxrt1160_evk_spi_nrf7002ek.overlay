@@ -32,7 +32,7 @@
 
 		iovdd-ctrl-gpios = <&gpio11 12 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>; /* D0 iomuxc_gpio_disp_b2_11 */
 		bucken-gpios = <&gpio11 11 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;/* D1 iomuxc_gpio_disp_b2_10 */
-		host-irq-gpios = <&gpio9 13 GPIO_ACTIVE_HIGH>;/* D7 iomuxc_gpio_ad_14 */
+		host-irq-gpios = <&gpio3 13 GPIO_ACTIVE_HIGH>;/* D7 iomuxc_gpio_ad_14 */
 		
 		/* List of interfaces */
 		wlan0: wlan0 {

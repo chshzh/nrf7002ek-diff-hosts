@@ -18,52 +18,91 @@ Evaluation to run Zephyr Wi-Fi samples using nRF7002EK with STM32/NXP chips as h
 * [Getting Started Guide — Zephyr Project Documentation](https://docs.zephyrproject.org/latest/develop/getting_started/index.html#getting-started-guide)
 * [Zephyr SDK — Zephyr Project Documentation](https://docs.zephyrproject.org/latest/develop/toolchains/zephyr_sdk.html#toolchain-zephyr-sdk-install)
 
-After install Zephyr, fetch latest nrf wifi firmware.
-
+Zephyr installation on MacOS
 ```
-% west blobs fetch nrf_wifi
-Fetching blob nrf_wifi: /Users/chsh/zephyrproject/modules/lib/nrf_wifi/zephyr/blobs/wifi_fw_bins/default/nrf70.bin
-Fetching blob nrf_wifi: /Users/chsh/zephyrproject/modules/lib/nrf_wifi/zephyr/blobs/wifi_fw_bins/scan_only/nrf70.bin
-Fetching blob nrf_wifi: /Users/chsh/zephyrproject/modules/lib/nrf_wifi/zephyr/blobs/wifi_fw_bins/radio_test/nrf70.bin
-Fetching blob nrf_wifi: /Users/chsh/zephyrproject/modules/lib/nrf_wifi/zephyr/blobs/wifi_fw_bins/system_with_raw/nrf70.bin
-Fetching blob nrf_wifi: /Users/chsh/zephyrproject/modules/lib/nrf_wifi/zephyr/blobs/wifi_fw_bins/offloaded_raw_tx/nrf70.bin
-```
+brew install cmake ninja gperf python3 python-tk ccache qemu dtc libmagic wget openocd
 
-Prepare a Zephyr_Env_Setup.sh for convenience, run source Zephyr_Env_Setup.sh before open terminal.
+mkdir /opt/nordic/zp/v4.1.0
 
-```
-#!/bin/zsh
-echo "Loading Zephyr Environment ..."
-# Source Zephyr environment
-source /opt/nordic/zp/v4.1.0/zephyr/zephyr-env.sh
+cd /opt/nordic/zp/v4.1.0
+python3 -m venv .venv
 
-# Activate virtual environment
-source $ZEPHYR_BASE/../../.venv/bin/activate
+source .venv/bin/activate
 
-# Export paths
-export PATH=/Applications/NXP/LinkServer_25.3.31:$PATH
-export PATH=/Applications/STMicroelectronics/STM32Cube/STM32CubeProgrammer/STM32CubeProgrammer.app/Contents/MacOs/bin:$PATH
+pip install west
 
-# Get Zephyr version information
-ZEPHYR_VERSION_MAJOR=$(cat $ZEPHYR_BASE/VERSION | grep VERSION_MAJOR | awk '{print $3}')
-ZEPHYR_VERSION_MINOR=$(cat $ZEPHYR_BASE/VERSION | grep VERSION_MINOR | awk '{print $3}')
-ZEPHYR_PATCHLEVEL=$(cat $ZEPHYR_BASE/VERSION | grep PATCHLEVEL | awk '{print $3}')
+west init . #Download zephyr
+west update #Donwload other modules
+west zephyr-export
+west packages pip --install
 
-# Get SDK version
-SDK_VERSION=$(cat $ZEPHYR_BASE/SDK_VERSION)
-
-# Print formatted output
-echo "Zephyr: V${ZEPHYR_VERSION_MAJOR}.${ZEPHYR_VERSION_MINOR}.${ZEPHYR_PATCHLEVEL}"
-echo "Toolchain: zephyr-sdk-${SDK_VERSION}"
-
-# Change directory to ZEPHYR_BASE
-cd $ZEPHYR_BASE
-
-echo "Zephyr Environment Ready!!!"
-
+cd zephyr
+west sdk install -b /opt/nordic/zp/toolchains
+west blobs fetch nrf_wifi
 ```
 
-MacOS: Generate an app(suggest to name it ZephyrTerminal) with Script Editor to open zsh terminal and run above script to make Zephyr Envrionment Ready in Terminal.
+## VS Code Workspace Configuration
+
+Create a VS Code workspace file (e.g., `zephyr410.code-workspace`) with the following configuration for easy environment setup:
+
+```json
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"terminal.integrated.profiles.osx": {
+			"Zephyr410SH": {
+				"path": "zsh",
+				"args": [
+					"-c",
+					"source /opt/nordic/zp/v4.1.0/.venv/bin/activate && source /opt/nordic/zp/v4.1.0/zephyr/zephyr-env.sh && EXPECTED_SDK_VERSION=$(cat $ZEPHYR_BASE/SDK_VERSION | tr -d '\\n') && export ZEPHYR_SDK_INSTALL_DIR=/opt/nordic/zp/toolchains/zephyr-sdk-$EXPECTED_SDK_VERSION && export PATH=/Applications/NXP/LinkServer:$PATH && export PATH=/Applications/STMicroelectronics/STM32Cube/STM32CubeProgrammer/STM32CubeProgrammer.app/Contents/MacOs/bin:$PATH && cd $ZEPHYR_BASE && ZEPHYR_VERSION=$(grep 'VERSION_MAJOR' $ZEPHYR_BASE/VERSION | cut -d' ' -f3).$(grep 'VERSION_MINOR' $ZEPHYR_BASE/VERSION | cut -d' ' -f3).$(grep 'PATCHLEVEL' $ZEPHYR_BASE/VERSION | cut -d' ' -f3) && echo 'Zephyr Environment Ready!!!' && echo '========================' && echo 'Zephyr Version:' && echo $ZEPHYR_VERSION && echo 'Expected SDK Version:' && cat $ZEPHYR_BASE/SDK_VERSION && echo 'Using Toolchain:' && echo $ZEPHYR_SDK_INSTALL_DIR && if [ -d \"$ZEPHYR_SDK_INSTALL_DIR\" ]; then echo 'Toolchain Found: ✓'; else echo 'Toolchain Missing: ✗'; fi && echo '========================' && exec /bin/zsh"
+				]
+			}
+		}
+	}
+}
+```
+
+When you open the `Zephyr410SH` terminal profile, you should see the following output:
+
+**If toolchain is installed:**
+```
+Zephyr Environment Ready!!!
+========================
+Zephyr Version:
+4.1.0
+Expected SDK Version:
+0.17.0
+Toolchain Found: ✓
+Using Toolchain:
+/opt/nordic/zp/toolchains/zephyr-sdk-0.17.0
+========================
+```
+
+**If toolchain is missing:**
+```
+Zephyr Environment Ready!!!
+========================
+Zephyr Version:
+4.1.0
+Expected SDK Version:
+0.17.0
+Expected Toolchain Missing: ✗
+Please install Toolchain:
+/opt/nordic/zp/toolchains/zephyr-sdk-0.17.0
+========================
+```
+
+This configuration automatically:
+- Activates the Python virtual environment
+- Sources the Zephyr environment
+- Dynamically detects and sets the correct toolchain version
+- Adds external tool paths (LinkServer, STM32CubeProgrammer)
+- Validates that the expected toolchain is available
+- Displays version information for verification
 
 ## Blinky sample test
 
@@ -75,7 +114,7 @@ west build -p -b nucleo_h723zg samples/basic/blinky
 west flash
 ```
 
-Install LinkServer to default path following [MIMXRT1160-EVK](https://docs.zephyrproject.org/latest/boards/st/stm32h750b_dk/doc/index.html).
+Install LinkServer to default path following [MIMXRT1160-EVK](https://docs.zephyrproject.org/latest/boards/nxp/mimxrt1160_evk/doc/index.html).
 
 Note: The LinkServer on board seems not very stable so the writer used a Jlink debugger as programmer following [Using J-Link with MIMXRT1160-EVK or MIMXRT1170-EVK](https://community.nxp.com/t5/i-MX-RT-Crossover-MCUs-Knowledge/Using-J-Link-with-MIMXRT1160-EVK-or-MIMXRT1170-EVK/ta-p/1529760).
 
@@ -95,34 +134,27 @@ Note: Due to the lack of crypto lib support on Zephyr, same commands like "wifi 
 
 ### Issue: Nucleo also have ethernet on board, this will cause warning that expect two ipv4 address.
 
-Solution 1: Add `-DCONFIG_NET_IF_MAX_IPV4_COUNT=2` in building command to increase the default value from 1 to 2.
+Solution: Add `-DCONFIG_NET_IF_MAX_IPV4_COUNT=2` in building command to increase the default maximum network interface from 1 to 2.
 
 ```
 west build -p -b nucleo_h723zg -- -DSHIELD=nrf7002ek -DCONFIG_NET_IF_MAX_IPV4_COUNT=2
-```
-
-Solution 2: Disable ethernet port with boards/[nucleo\_h723zg.overlay](nucleo_h723zg.overlay).
-
-```
-west build -p -b nucleo_h723zg -- -DSHIELD=nrf7002ek
 ```
 
 ### MIMXRT1160-EVK
 
 ### Issue1: Same as Nucleo, also have ethernet on board, this will cause warning that expect two ipv4 address.
 
-Solution 1: Add `-DCONFIG_NET_IF_MAX_IPV4_COUNT=2` to increse the default value from 1 to 2.
-Solution 2: Disable ethernet port with boards/[mimxrt1160\_evk\_mimxrt1166\_cm7.overlay](mimxrt1160_evk_mimxrt1166_cm7.overlay).
+Solution: Add `-DCONFIG_NET_IF_MAX_IPV4_COUNT=2` to increse the default value from 1 to 2.
 
-### Issue2: nrf7002eks sheild use arduino pins for SPI connection, but there is no arduino pins definition in mimxrt1160_evk device tree files.
+### Issue2: nrf7002EK sheild use arduino pins for SPI connection, but there is no arduino pins definition in mimxrt1160_evk device tree files.
 
-Solution 1: Create a custom device tree overlay file that provides spi connection directly: [mimxrt1160\_evk\_nrf7002ek.overlay](mimxrt1160_evk_nrf7002ek.overlay).
+Solution 1: Create a custom device tree overlay file that provides spi connection directly: [mimxrt1160\_evk\_spi\_nrf7002ek.overlay](mimxrt1160_evk_spi_nrf7002ek.overlay).
 
 ```
-west build -p -b mimxrt1160_evk/mimxrt1166/cm7 -- -DDTC_OVERLAY_FILE=mimxrt1160_evk_nrf7002ek.overlay -DCONFIG_NET_IF_MAX_IPV4_COUNT=2
+west build -p -b mimxrt1160_evk/mimxrt1166/cm7 -- -DDTC_OVERLAY_FILE=mimxrt1160_evk_spi_nrf7002ek.overlay -DCONFIG_NET_IF_MAX_IPV4_COUNT=2
 ```
 
-Solution 2(better): Add arduino defination on mimxrt1160\_evk board file. zephyr/boards/nxp/mimxrt1160\_evk/[mimxrt1160\_evk.dtsi](mimxrt1160_evk.dtsi).
+Solution 2: Add arduino defination on mimxrt1160\_evk board file. zephyr/boards/nxp/mimxrt1160\_evk/[mimxrt1160\_evk.dtsi](mimxrt1160_evk.dtsi).
 
 [https://github.com/zephyrproject-rtos/zephyr/issues/92540](https://github.com/zephyrproject-rtos/zephyr/issues/92540)
 
@@ -143,7 +175,7 @@ west build -p -b nucleo_h723zg -S wifi-ipv4 -- -DSHIELD=nrf7002ek -DCONFIG_NET_I
 ### MIMXRT1160-EVK
 
 ```
-west build -p -b mimxrt1160_evk/mimxrt1166/cm7 -S wifi-ipv4 -- -DDTC_OVERLAY_FILE=mimxrt1160_evk_nrf7002ek.overlay -DCONFIG_NET_IF_MAX_IPV4_COUNT=2
+west build -p -b mimxrt1160_evk/mimxrt1166/cm7 -S wifi-ipv4 -- -DDTC_OVERLAY_FILE=mimxrt1160_evk_spi_nrf7002ek.overlay -DCONFIG_NET_IF_MAX_IPV4_COUNT=2
 ```
 
 ## [zephyr/samples/net/sockets/http\_get](https://docs.zephyrproject.org/latest/samples/net/sockets/http_get/README.html)
@@ -157,7 +189,7 @@ west build -p -b nucleo_h723zg -S wifi-ipv4 -- -DSHIELD=nrf7002ek -DCONFIG_NET_I
 ### MIMXRT1160-EVK
 
 ```
-west build -p -b mimxrt1160_evk/mimxrt1166/cm7 -S wifi-ipv4 -- -DDTC_OVERLAY_FILE=mimxrt1160_evk_nrf7002ek.overlay -DCONFIG_NET_IF_MAX_IPV4_COUNT=2
+west build -p -b mimxrt1160_evk/mimxrt1166/cm7 -S wifi-ipv4 -- -DDTC_OVERLAY_FILE=mimxrt1160_evk_spi_nrf7002ek.overlay -DCONFIG_NET_IF_MAX_IPV4_COUNT=2
 ```
 
 ## [zephyr/samples/net/sockets/sntp\_client](https://docs.zephyrproject.org/latest/samples/net/sockets/sntp_client/README.html)
@@ -173,7 +205,7 @@ west build -p -b nucleo_h723zg -S wifi-ipv4 -- -DSHIELD=nrf7002ek -DCONFIG_NET_I
 ### MIMXRT1160-EVK
 
 ```
-west build -p -b mimxrt1160_evk/mimxrt1166/cm7 -S wifi-ipv4 -- -DDTC_OVERLAY_FILE=mimxrt1160_evk_nrf7002ek.overlay -DCONFIG_NET_IF_MAX_IPV4_COUNT=2
+west build -p -b mimxrt1160_evk/mimxrt1166/cm7 -S wifi-ipv4 -- -DDTC_OVERLAY_FILE=mimxrt1160_evk_spi_nrf7002ek.overlay -DCONFIG_NET_IF_MAX_IPV4_COUNT=2
 ```
 
 ## [zephyr/samples/net/sockets/zperf(similar to NCS throughput sample)](https://docs.zephyrproject.org/latest/samples/net/zperf/README.html)
@@ -190,6 +222,8 @@ west build -p -b nucleo_h723zg -S wifi-ipv4 -- -DSHIELD=nrf7002ek -DCONFIG_NET_I
 west build -p -b mimxrt1160_evk/mimxrt1166/cm7 -S wifi-ipv4 -- -DSHIELD=nrf7002ek -DCONFIG_NET_IF_MAX_IPV4_COUNT=2
 ```
 
-## NCS softap sample
-
+Limitation:
+1. Softap sample
 Due to the lack of crypto lib support on Zephyr, this sample cannot work on other hosts than Nordic chips which use nRF Security library only avaliable in NCS.
+2. QSPI
+The nRF7002 Wi-Fi driver (/zephyr/modules/nrf_wifi/bus/qspi_if.c) is tightly coupled to Nordic hardware,Nordic-specific nrfx_qspi driver APIs. Both STM(OCTOSPI controller for QSPI operations) and NXP(FlexSPI controller for QSPI operations) has their own QSPI driver, not sue if they can be used for general Zephyr QSPI usage.

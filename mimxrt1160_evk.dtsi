@@ -61,7 +61,7 @@
 				<10 0 &gpio9 5 0>,	/* D4 iomuxc_gpio_ad_06*/
 				<11 0 &gpio9 4 0>,	/* D5 iomuxc_gpio_ad_05*/
 				<12 0 &gpio8 31 0>,	/* D6 iomuxc_gpio_ad_00*/
-				<13 0 &gpio9 13 0>,	/* D7 iomuxc_gpio_ad_14*/
+				<13 0 &gpio3 13 0>,	/* D7 iomuxc_gpio_ad_14*/
 				<14 0 &gpio9 6 0>,	/* D8 iomuxc_gpio_ad_07*/
 				<15 0 &gpio9 0 0>,	/* D9 iomuxc_gpio_ad_01*/
 				<16 0 &gpio9 28 0>,	/* D10 iomuxc_gpio_ad_29_lpspi1_pcs0 SPI_SS */
