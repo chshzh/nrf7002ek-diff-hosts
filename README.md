@@ -2,7 +2,7 @@
 Evaluation to run Zephyr Wi-Fi samples using nRF7002EK with STM32/NXP chips as hosts.
 ## Hardware 
 * [Nucleo H723ZG](https://docs.zephyrproject.org/latest/boards/st/stm32h750b_dk/doc/index.html) + [nRF7002EK](https://docs.zephyrproject.org/latest/boards/shields/nrf7002ek/doc/index.html)
-* [MIMXRT1160-EVK](https://docs.zephyrproject.org/latest/boards/st/stm32h750b_dk/doc/index.html) + [nRF7002EK](https://docs.zephyrproject.org/latest/boards/shields/nrf7002ek/doc/index.html)
+* [MIMXRT1160-EVK](https://docs.zephyrproject.org/latest/boards/nxp/mimxrt1160_evk/doc/index.html) + [nRF7002EK](https://docs.zephyrproject.org/latest/boards/shields/nrf7002ek/doc/index.html)
 
 ## Firmware
 * [zephyr/samples/net/wifi/shell](https://docs.zephyrproject.org/latest/samples/net/wifi/shell/README.html)
@@ -128,7 +128,7 @@ west flash -r jlink
 
 ## [zephyr/samples/net/wifi/shell](https://docs.zephyrproject.org/latest/samples/net/wifi/shell/README.html)
 
-Note: Due to the lack of crypto lib support on Zephyr, same commands like "wifi ap" may not be supported.
+Note: Due to the lack of crypto lib support on Zephyr, some commands like "wifi ap" may not be supported when use host chips from other venders than Nordic.
 
 ### Nucleo H723ZG
 
@@ -164,7 +164,7 @@ west build -p -b mimxrt1160_evk/mimxrt1166/cm7 -- -DSHIELD=nrf7002ek  -DCONFIG_N
 
 ## [zephyr/samples/net/mqtt\_publisher](https://docs.zephyrproject.org/latest/samples/net/mqtt_publisher/README.html) 
 
-The sample uses an MQTT broker with static IP in the LAN. To make the test simpler, replace `CONFIG_NET_CONFIG_PEER_IPV4_ADDR` with a public MQTT IPv4 address. Ping pubice NTP server like `broker.hivemq.com` to get its ip `3.123.159.193` and replace current `CONFIG_NET_CONFIG_PEER_IPV4_ADDR` in prj.conf to do quick test.
+The sample uses an MQTT broker with static IP in the LAN. To make the test simpler, replace `CONFIG_NET_CONFIG_PEER_IPV4_ADDR` with a public MQTT IPv4 address. Ping pubice MQTT server like `broker.hivemq.com` to get its ip `3.123.159.193` and replace current `CONFIG_NET_CONFIG_PEER_IPV4_ADDR` in prj.conf to do quick test.
 
 ### Nucleo H723ZG
 
