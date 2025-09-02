@@ -32,7 +32,7 @@ source .venv/bin/activate
 pip install west
 
 west init . #Download zephyr
-west update #Donwload other modules
+west update #Download other modules
 west zephyr-export
 west packages pip --install
 
@@ -219,8 +219,7 @@ west build -p -b nucleo_h723zg -S wifi-ipv4 -- -DSHIELD=nrf7002ek -DCONFIG_NET_I
 ### MIMXRT1160-EVK
 
 ```
-
-west build -p -b mimxrt1160_evk/mimxrt1166/cm7 -S wifi-ipv4 -- -DDTC_OVERLAY_FILE=mimxrt1160_evk_spi_nrf7002ek.overlay -DSHIELD=nrf7002ek -DCONFIG_NET_IF_MAX_IPV4_COUNT=2
+west build -p -b mimxrt1160_evk/mimxrt1166/cm7 -S wifi-ipv4 -- -DDTC_OVERLAY_FILE=mimxrt1160_evk_spi_nrf7002ek.overlay -DCONFIG_NET_IF_MAX_IPV4_COUNT=2
 ```
 
 # Log Extracts: Successful Integration
