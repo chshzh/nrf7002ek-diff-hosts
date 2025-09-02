@@ -236,11 +236,7 @@ Following is an Shell/Zperf logs showing successful implementation.
 [00:00:00.438,000] <inf> net_config: Initializing network
 [00:00:00.438,000] <inf> net_config: Waiting interface 1 (0x24001908) to be up...
 [00:00:00.438,000] <inf> net_config: Running dhcpv4 client...
-[00:00:00.438,000] <inf> wifi_supplicant: wpa_supplicant initialized
-uart:~$ -h
--h: command not found
-uart:~$ h
-h: command not found
+[00:00:00.438,000] <inf> wifi_supplicant: wpa_supplicant initializedßß
 uart:~$ help
 Please press the <Tab> button to see all available commands.
 You can also use the <Tab> button to prompt or auto-complete all commands or its subcommands.
