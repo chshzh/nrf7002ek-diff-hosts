@@ -32,7 +32,7 @@ source .venv/bin/activate
 pip install west
 
 west init . #Download zephyr
-west update #Donwload other modules
+west update #Download other modules
 west zephyr-export
 west packages pip --install
 
