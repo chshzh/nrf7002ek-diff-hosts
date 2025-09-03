@@ -11,7 +11,7 @@ Evaluation to run Zephyr Wi-Fi samples using nRF7002EK with STM32/NXP chips as h
 * [zephyr/samples/net/sockets/sntp\_client](https://docs.zephyrproject.org/latest/samples/net/sockets/sntp_client/README.html)
 * [zephyr/samples/net/sockets/zperf(for throughput test)](https://docs.zephyrproject.org/latest/samples/net/zperf/README.html)
 
-# Vanilla Zephyr v4.1.0 Setup
+# Vanilla Zephyr v4.2.0 Setup
 
 ## Install Zephyr and Toolchain
 
@@ -22,17 +22,19 @@ Zephyr installation on MacOS
 ```
 brew install cmake ninja gperf python3 python-tk ccache qemu dtc libmagic wget openocd
 
-mkdir /opt/nordic/zp/v4.1.0
+mkdir /opt/nordic/zp/v4.2.0
 
-cd /opt/nordic/zp/v4.1.0
+cd /opt/nordic/zp/v4.2.0
 python3 -m venv .venv
 
 source .venv/bin/activate
 
 pip install west
 
-west init . #Download zephyr
-west update #Download other modules
+west init .
+cd zephyr
+git checkout v4.2.0
+west update
 west zephyr-export
 west packages pip --install
 
@@ -43,7 +45,7 @@ west blobs fetch nrf_wifi
 
 ## VS Code Workspace Configuration
 
-Create a VS Code workspace file (e.g., `zephyr410.code-workspace`) with the following configuration for easy environment setup:
+Create a VS Code workspace file (e.g., `zephyr420.code-workspace`) with the following configuration for easy environment setup:
 
 ```json
 {
@@ -54,11 +56,11 @@ Create a VS Code workspace file (e.g., `zephyr410.code-workspace`) with the foll
 	],
 	"settings": {
 		"terminal.integrated.profiles.osx": {
-			"Zephyr410SH": {
+			"Zephyr420SH": {
 				"path": "zsh",
 				"args": [
 					"-c",
-					"source /opt/nordic/zp/v4.1.0/.venv/bin/activate && source /opt/nordic/zp/v4.1.0/zephyr/zephyr-env.sh && EXPECTED_SDK_VERSION=$(cat $ZEPHYR_BASE/SDK_VERSION | tr -d '\\n') && export ZEPHYR_SDK_INSTALL_DIR=/opt/nordic/zp/toolchains/zephyr-sdk-$EXPECTED_SDK_VERSION && export PATH=/Applications/NXP/LinkServer:$PATH && export PATH=/Applications/STMicroelectronics/STM32Cube/STM32CubeProgrammer/STM32CubeProgrammer.app/Contents/MacOs/bin:$PATH && cd $ZEPHYR_BASE && ZEPHYR_VERSION=$(grep 'VERSION_MAJOR' $ZEPHYR_BASE/VERSION | cut -d' ' -f3).$(grep 'VERSION_MINOR' $ZEPHYR_BASE/VERSION | cut -d' ' -f3).$(grep 'PATCHLEVEL' $ZEPHYR_BASE/VERSION | cut -d' ' -f3) && echo 'Zephyr Environment Ready!!!' && echo '========================' && echo 'Zephyr Version:' && echo $ZEPHYR_VERSION && echo 'Expected SDK Version:' && cat $ZEPHYR_BASE/SDK_VERSION && echo 'Using Toolchain:' && echo $ZEPHYR_SDK_INSTALL_DIR && if [ -d \"$ZEPHYR_SDK_INSTALL_DIR\" ]; then echo 'Toolchain Found: ✓'; else echo 'Toolchain Missing: ✗'; fi && echo '========================' && exec /bin/zsh"
+					"source /opt/nordic/zp/v4.1.0/.venv/bin/activate && source /opt/nordic/zp/v4.2.0/zephyr/zephyr-env.sh && EXPECTED_SDK_VERSION=$(cat $ZEPHYR_BASE/SDK_VERSION | tr -d '\\n') && export ZEPHYR_SDK_INSTALL_DIR=/opt/nordic/zp/toolchains/zephyr-sdk-$EXPECTED_SDK_VERSION && export PATH=/Applications/NXP/LinkServer:$PATH && export PATH=/Applications/STMicroelectronics/STM32Cube/STM32CubeProgrammer/STM32CubeProgrammer.app/Contents/MacOs/bin:$PATH && cd $ZEPHYR_BASE && ZEPHYR_VERSION=$(grep 'VERSION_MAJOR' $ZEPHYR_BASE/VERSION | cut -d' ' -f3).$(grep 'VERSION_MINOR' $ZEPHYR_BASE/VERSION | cut -d' ' -f3).$(grep 'PATCHLEVEL' $ZEPHYR_BASE/VERSION | cut -d' ' -f3) && echo 'Zephyr Environment Ready!!!' && echo '========================' && echo 'Zephyr Version:' && echo $ZEPHYR_VERSION && echo 'Expected SDK Version:' && cat $ZEPHYR_BASE/SDK_VERSION && echo 'Using Toolchain:' && echo $ZEPHYR_SDK_INSTALL_DIR && if [ -d \"$ZEPHYR_SDK_INSTALL_DIR\" ]; then echo 'Toolchain Found: ✓'; else echo 'Toolchain Missing: ✗'; fi && echo '========================' && exec /bin/zsh"
 				]
 			}
 		}
@@ -66,7 +68,7 @@ Create a VS Code workspace file (e.g., `zephyr410.code-workspace`) with the foll
 }
 ```
 
-When you open the `Zephyr410SH` terminal profile, you should see the following output:
+When you open the `Zephyr420SH` terminal profile, you should see the following output:
 
 **If toolchain is installed:**
 ```
@@ -232,7 +234,7 @@ Following is an Shell/Zperf logs showing successful implementation.
 [00:00:00.053,000] <inf> wifi_nrf_bus: SPIM spi@40013000: latency = 0
 [00:00:00.310,000] <inf> wifi_nrf: Management buffer offload enabled
 
-*** Booting Zephyr OS build v4.1.0-2-g08b9cc57c223 ***
+*** Booting Zephyr OS build v4.2.0 ***
 [00:00:00.438,000] <inf> net_config: Initializing network
 [00:00:00.438,000] <inf> net_config: Waiting interface 1 (0x24001908) to be up...
 [00:00:00.438,000] <inf> net_config: Running dhcpv4 client...
